@@ -20,7 +20,7 @@ struct SwiftMarkItDownTests {
 
     @Test("converts simple HTML to Markdown")
     func convertsHTML() throws {
-        let html = "<h1>Title</h1><p>Hello <strong>Swift</strong> &amp; iOS.</p><a href=\"https://example.com\">Link</a>"
+        let html = "<html><head><title>Ignored</title></head><body><h1>Title</h1><p>Hello <strong>Swift</strong> &amp; iOS.</p><a href=\"https://example.com\">Link</a></body></html>"
         let request = ConversionRequest(data: Data(html.utf8), fileName: "index.html")
         let document = try MarkItDown().convert(request)
         #expect(document.markdown == "# Title\nHello **Swift** & iOS.\n\n[Link](https://example.com)")
