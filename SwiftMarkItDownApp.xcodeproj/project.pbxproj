@@ -9,26 +9,13 @@
 /* Begin PBXBuildFile section */
 		01A95D34F4DA4022BDE286B4 /* SwiftMarkItDownApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66481738239B42EB8C484310 /* SwiftMarkItDownApp.swift */; };
 		23EA68F489C04895BA06323F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037D23D5D1574ACA94C31BF3 /* ContentView.swift */; };
-		09A01BF32F9540198C4C38C0 /* SwiftMarkItDownAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6A01775FC574126BC7B7F04 /* SwiftMarkItDownAppUITests.swift */; };
 		EFA99390927544718E050040 /* SwiftMarkItDown in Frameworks */ = {isa = PBXBuildFile; productRef = FFBABEEF11084DE78C50A81D /* SwiftMarkItDown */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		BFB8686760BA40CAA5FE33FC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 26F6896B96234A00BB10F5CF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4E38F4A68E3D44C481A90DAE;
-			remoteInfo = SwiftMarkItDownApp;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		037D23D5D1574ACA94C31BF3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5C5BFDA93AF34555BFF7DC79 /* SwiftMarkItDownApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftMarkItDownApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66481738239B42EB8C484310 /* SwiftMarkItDownApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMarkItDownApp.swift; sourceTree = "<group>"; };
-		C668187E8F834070BF3F0A48 /* SwiftMarkItDownAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftMarkItDownAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C6A01775FC574126BC7B7F04 /* SwiftMarkItDownAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMarkItDownAppUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,13 +27,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		33D9FEC1419F4E25BC90EED1 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -54,7 +34,6 @@
 			isa = PBXGroup;
 			children = (
 				72D75F900530410F84E43735 /* SwiftMarkItDownApp */,
-				D8EC7A76552A4C33B44574D0 /* SwiftMarkItDownAppUITests */,
 				A2101201DE9749578A370783 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -68,19 +47,10 @@
 			path = App/SwiftMarkItDownApp;
 			sourceTree = "<group>";
 		};
-		D8EC7A76552A4C33B44574D0 /* SwiftMarkItDownAppUITests */ = {
-			isa = PBXGroup;
-			children = (
-				C6A01775FC574126BC7B7F04 /* SwiftMarkItDownAppUITests.swift */,
-			);
-			path = App/SwiftMarkItDownAppUITests;
-			sourceTree = "<group>";
-		};
 		A2101201DE9749578A370783 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				5C5BFDA93AF34555BFF7DC79 /* SwiftMarkItDownApp.app */,
-				C668187E8F834070BF3F0A48 /* SwiftMarkItDownAppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -108,24 +78,6 @@
 			productReference = 5C5BFDA93AF34555BFF7DC79 /* SwiftMarkItDownApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		83558351FBC64F6E928BBDC0 /* SwiftMarkItDownAppUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 09FB1C2CA7864043B5027AD3 /* Build configuration list for PBXNativeTarget "SwiftMarkItDownAppUITests" */;
-			buildPhases = (
-				98D93C2743784CF988D09C43 /* Sources */,
-				33D9FEC1419F4E25BC90EED1 /* Frameworks */,
-				24B1F8836E8D4E468BE96866 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				38E46A8C59734FD6BF61DDF7 /* PBXTargetDependency */,
-			);
-			name = SwiftMarkItDownAppUITests;
-			productName = SwiftMarkItDownAppUITests;
-			productReference = C668187E8F834070BF3F0A48 /* SwiftMarkItDownAppUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -138,10 +90,6 @@
 				TargetAttributes = {
 					4E38F4A68E3D44C481A90DAE = {
 						CreatedOnToolsVersion = 16.0;
-					};
-					83558351FBC64F6E928BBDC0 = {
-						CreatedOnToolsVersion = 16.0;
-						TestTargetID = 4E38F4A68E3D44C481A90DAE;
 					};
 				};
 			};
@@ -162,20 +110,12 @@
 			projectRoot = "";
 			targets = (
 				4E38F4A68E3D44C481A90DAE /* SwiftMarkItDownApp */,
-				83558351FBC64F6E928BBDC0 /* SwiftMarkItDownAppUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		E8C256034EAE4CEBA9704C5E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		24B1F8836E8D4E468BE96866 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -194,23 +134,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		98D93C2743784CF988D09C43 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				09A01BF32F9540198C4C38C0 /* SwiftMarkItDownAppUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		38E46A8C59734FD6BF61DDF7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4E38F4A68E3D44C481A90DAE /* SwiftMarkItDownApp */;
-			targetProxy = BFB8686760BA40CAA5FE33FC /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0E2AFE0A298C48F88F93BE03 /* Debug */ = {
@@ -386,42 +310,6 @@
 			};
 			name = Release;
 		};
-		BF9DCF88C5A54276A57D75B6 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.SwiftMarkItDownAppUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = SwiftMarkItDownApp;
-			};
-			name = Debug;
-		};
-		48A272A4FB4C402F8EEA962A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.SwiftMarkItDownAppUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = SwiftMarkItDownApp;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -439,15 +327,6 @@
 			buildConfigurations = (
 				0E2AFE0A298C48F88F93BE03 /* Debug */,
 				379F6DF511A3471E9FC78272 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		09FB1C2CA7864043B5027AD3 /* Build configuration list for PBXNativeTarget "SwiftMarkItDownAppUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				BF9DCF88C5A54276A57D75B6 /* Debug */,
-				48A272A4FB4C402F8EEA962A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

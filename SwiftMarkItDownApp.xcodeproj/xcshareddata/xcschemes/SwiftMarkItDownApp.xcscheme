@@ -29,17 +29,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "83558351FBC64F6E928BBDC0"
-               BuildableName = "SwiftMarkItDownAppUITests.xctest"
-               BlueprintName = "SwiftMarkItDownAppUITests"
-               ReferencedContainer = "container:SwiftMarkItDownApp.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

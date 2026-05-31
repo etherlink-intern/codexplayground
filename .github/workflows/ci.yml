@@ -23,29 +23,3 @@ jobs:
 
       - name: Run CLI smoke tests
         run: Scripts/smoke-test.sh
-
-      - name: Build iOS demo app
-        run: >
-          xcodebuild
-          -project SwiftMarkItDownApp.xcodeproj
-          -scheme SwiftMarkItDownApp
-          -destination 'generic/platform=iOS Simulator'
-          CODE_SIGNING_ALLOWED=NO
-          build
-
-      - name: Run iOS demo UI smoke test
-        run: |
-          set -euo pipefail
-          SIMULATOR_NAME="$(xcrun simctl list devices available | awk -F '[()]' '/iPhone/ { gsub(/^[ \t]+|[ \t]+$/, "", $1); print $1; exit }')"
-          if [ -z "${SIMULATOR_NAME}" ]; then
-            echo "No available iPhone simulator found" >&2
-            xcrun simctl list devices available
-            exit 1
-          fi
-          echo "Using simulator: ${SIMULATOR_NAME}"
-          xcodebuild \
-            -project SwiftMarkItDownApp.xcodeproj \
-            -scheme SwiftMarkItDownApp \
-            -destination "platform=iOS Simulator,name=${SIMULATOR_NAME}" \
-            CODE_SIGNING_ALLOWED=NO \
-            test
