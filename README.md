@@ -48,21 +48,6 @@ print(document.markdown)
 swift run swift-markitdown path/to/file.html
 ```
 
-## iOS demo app
-
-Open `SwiftMarkItDownApp.xcodeproj` in Xcode, select the `SwiftMarkItDownApp` scheme, and run it on an iOS simulator. The app lets you edit sample text/HTML/CSV/JSON input and convert it to Markdown with the local `SwiftMarkItDown` package.
-
-You can also build it from Terminal on a Mac with Xcode installed:
-
-```bash
-xcodebuild \
-  -project SwiftMarkItDownApp.xcodeproj \
-  -scheme SwiftMarkItDownApp \
-  -destination 'generic/platform=iOS Simulator' \
-  CODE_SIGNING_ALLOWED=NO \
-  build
-```
-
 ## Testing
 
 Run the unit test suite and CLI fixture smoke tests before opening a PR:
@@ -72,18 +57,7 @@ swift test
 Scripts/smoke-test.sh
 ```
 
-On a Mac with Xcode installed, also build the iOS demo app:
-
-```bash
-xcodebuild \
-  -project SwiftMarkItDownApp.xcodeproj \
-  -scheme SwiftMarkItDownApp \
-  -destination 'generic/platform=iOS Simulator' \
-  CODE_SIGNING_ALLOWED=NO \
-  build
-```
-
-GitHub Actions runs the same Swift package, CLI smoke-test, and iOS demo app build checks on pushes to `main`, pull requests, and manual workflow dispatches.
+GitHub Actions runs the same checks on pushes to `main`, pull requests, and manual workflow dispatches.
 
 ## Roadmap
 

@@ -23,12 +23,3 @@ jobs:
 
       - name: Run CLI smoke tests
         run: Scripts/smoke-test.sh
-
-      - name: Build iOS demo app
-        run: >
-          xcodebuild
-          -project SwiftMarkItDownApp.xcodeproj
-          -scheme SwiftMarkItDownApp
-          -destination 'generic/platform=iOS Simulator'
-          CODE_SIGNING_ALLOWED=NO
-          build
