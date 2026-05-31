@@ -1,6 +1,6 @@
 # SwiftMarkItDown
 
-SwiftMarkItDown is a native Swift document-to-Markdown pipeline inspired by Microsoft MarkItDown. The repository now contains both the reusable Swift Package conversion core and a minimal SwiftUI iOS demo app that proves the package can be embedded and run from Xcode.
+SwiftMarkItDown is the start of a native Swift/iOS document-to-Markdown pipeline inspired by Microsoft MarkItDown. The repository is structured around a Swift Package so the same core can be embedded in an iOS app, a macOS utility, or a server-side Swift service. The repo also includes a minimal SwiftUI demo app that exercises the package on iOS.
 
 ## What works today
 
@@ -18,47 +18,17 @@ PDF, DOCX, PPTX, and XLSX are represented in the format model but still return `
 ## Repository layout
 
 ```text
-Package.swift                         Swift Package manifest
-SwiftMarkItDownApp.xcodeproj/         Xcode project for the iOS demo app
+Package.swift
+SwiftMarkItDownApp.xcodeproj/  Xcode project for the iOS demo app
 App/
-  SwiftMarkItDownApp/                 SwiftUI app target that imports the package
+  SwiftMarkItDownApp/          SwiftUI app target that imports the package
 Sources/
-  SwiftMarkItDown/                    Core library and converter protocols
-  swift-markitdown/                   Minimal CLI wrapper around the library
-Scripts/
-  smoke-test.sh                       CLI fixture smoke-test runner
+  SwiftMarkItDown/             Core library and converter protocols
+  swift-markitdown/            Minimal CLI wrapper around the library
 Tests/
-  SwiftMarkItDownTests/               Core conversion tests
-  Fixtures/                           CLI smoke-test inputs
-  Expected/                           CLI smoke-test expected Markdown
-```
-
-## Requirements
-
-- Swift 6.0 or newer for the package and CLI.
-- Xcode 16 or newer to open/build the iOS demo app.
-- iOS 16 or newer simulator/device target for the demo app.
-
-## Run the iOS demo app in Xcode
-
-1. Clone or pull the repo on a Mac with Xcode installed.
-2. Open `SwiftMarkItDownApp.xcodeproj`.
-3. Select the `SwiftMarkItDownApp` scheme.
-4. Select any iOS simulator.
-5. Press **Run**.
-6. In the app, pick Text, HTML, CSV, or JSON, edit the sample input if desired, then tap **Convert to Markdown**.
-
-The app target depends on the local `SwiftMarkItDown` package product, so changes in `Sources/SwiftMarkItDown/` are exercised directly by the app.
-
-You can also verify the app from Terminal on a Mac:
-
-```bash
-xcodebuild \
-  -project SwiftMarkItDownApp.xcodeproj \
-  -scheme SwiftMarkItDownApp \
-  -destination 'generic/platform=iOS Simulator' \
-  CODE_SIGNING_ALLOWED=NO \
-  build
+  SwiftMarkItDownTests/        Core conversion tests
+  Fixtures/                    CLI smoke-test inputs
+  Expected/                    CLI smoke-test expected Markdown
 ```
 
 ## Library usage
@@ -82,25 +52,14 @@ swift run swift-markitdown path/to/file.html
 
 ## Testing
 
-Run the package tests and CLI smoke tests before opening a PR:
+Run the unit test suite and CLI fixture smoke tests before opening a PR:
 
 ```bash
 swift test
 Scripts/smoke-test.sh
 ```
 
-On a Mac with Xcode installed, also build the iOS demo app:
-
-```bash
-xcodebuild \
-  -project SwiftMarkItDownApp.xcodeproj \
-  -scheme SwiftMarkItDownApp \
-  -destination 'generic/platform=iOS Simulator' \
-  CODE_SIGNING_ALLOWED=NO \
-  build
-```
-
-GitHub Actions runs `swift test`, `Scripts/smoke-test.sh`, and the iOS demo `xcodebuild` on pushes to `main`, pull requests, and manual workflow dispatches.
+GitHub Actions runs the same checks on pushes to `main`, pull requests, and manual workflow dispatches.
 
 ## Roadmap
 
