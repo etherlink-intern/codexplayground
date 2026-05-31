@@ -1,6 +1,6 @@
 # SwiftMarkItDown
 
-SwiftMarkItDown is the start of a native Swift/iOS document-to-Markdown pipeline inspired by Microsoft MarkItDown. The repository is structured as a Swift Package so the same core can be embedded in an iOS app, a macOS utility, or a server-side Swift service.
+SwiftMarkItDown is the start of a native Swift/iOS document-to-Markdown pipeline inspired by Microsoft MarkItDown. The repository is structured around a Swift Package so the same core can be embedded in an iOS app, a macOS utility, or a server-side Swift service. The repo also includes a minimal SwiftUI demo app that exercises the package on iOS.
 
 ## Current scope
 
@@ -17,11 +17,16 @@ PDF, DOCX, PPTX, and XLSX are intentionally represented in the format model but 
 
 ```text
 Package.swift
+SwiftMarkItDownApp.xcodeproj/  Xcode project for the iOS demo app
+App/
+  SwiftMarkItDownApp/          SwiftUI app target that imports the package
 Sources/
-  SwiftMarkItDown/          Core library and converter protocols
-  swift-markitdown/         Minimal CLI wrapper around the library
+  SwiftMarkItDown/             Core library and converter protocols
+  swift-markitdown/            Minimal CLI wrapper around the library
 Tests/
-  SwiftMarkItDownTests/     Core conversion tests
+  SwiftMarkItDownTests/        Core conversion tests
+  Fixtures/                    CLI smoke-test inputs
+  Expected/                    CLI smoke-test expected Markdown
 ```
 
 ## Library usage
