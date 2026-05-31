@@ -1,6 +1,6 @@
 # SwiftMarkItDown
 
-SwiftMarkItDown is the start of a native Swift/iOS document-to-Markdown pipeline inspired by Microsoft MarkItDown. The repository is structured as a Swift Package so the same core can be embedded in an iOS app, a macOS utility, or a server-side Swift service.
+SwiftMarkItDown is the start of a native Swift/iOS document-to-Markdown pipeline inspired by Microsoft MarkItDown. The repository is structured around a Swift Package so the same core can be embedded in an iOS app, a macOS utility, or a server-side Swift service. The repo also includes a minimal SwiftUI demo app that exercises the package on iOS.
 
 ## Current scope
 
@@ -17,11 +17,16 @@ PDF, DOCX, PPTX, and XLSX are intentionally represented in the format model but 
 
 ```text
 Package.swift
+SwiftMarkItDownApp.xcodeproj/  Xcode project for the iOS demo app
+App/
+  SwiftMarkItDownApp/          SwiftUI app target that imports the package
 Sources/
-  SwiftMarkItDown/          Core library and converter protocols
-  swift-markitdown/         Minimal CLI wrapper around the library
+  SwiftMarkItDown/             Core library and converter protocols
+  swift-markitdown/            Minimal CLI wrapper around the library
 Tests/
-  SwiftMarkItDownTests/     Core conversion tests
+  SwiftMarkItDownTests/        Core conversion tests
+  Fixtures/                    CLI smoke-test inputs
+  Expected/                    CLI smoke-test expected Markdown
 ```
 
 ## Library usage
@@ -42,6 +47,43 @@ print(document.markdown)
 ```bash
 swift run swift-markitdown path/to/file.html
 ```
+
+## iOS demo app
+
+Open `SwiftMarkItDownApp.xcodeproj` in Xcode, select the `SwiftMarkItDownApp` scheme, and run it on an iOS simulator. The app lets you edit sample text/HTML/CSV/JSON input and convert it to Markdown with the local `SwiftMarkItDown` package.
+
+You can also build it from Terminal on a Mac with Xcode installed:
+
+```bash
+xcodebuild \
+  -project SwiftMarkItDownApp.xcodeproj \
+  -scheme SwiftMarkItDownApp \
+  -destination 'generic/platform=iOS Simulator' \
+  CODE_SIGNING_ALLOWED=NO \
+  build
+```
+
+## Testing
+
+Run the unit test suite and CLI fixture smoke tests before opening a PR:
+
+```bash
+swift test
+Scripts/smoke-test.sh
+```
+
+On a Mac with Xcode installed, also build the iOS demo app:
+
+```bash
+xcodebuild \
+  -project SwiftMarkItDownApp.xcodeproj \
+  -scheme SwiftMarkItDownApp \
+  -destination 'generic/platform=iOS Simulator' \
+  CODE_SIGNING_ALLOWED=NO \
+  build
+```
+
+GitHub Actions runs the same Swift package, CLI smoke-test, and iOS demo app build checks on pushes to `main`, pull requests, and manual workflow dispatches.
 
 ## Roadmap
 

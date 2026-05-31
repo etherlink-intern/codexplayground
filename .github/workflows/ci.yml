@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Swift tests and smoke tests
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Swift version
+        run: swift --version
+
+      - name: Run unit tests
+        run: swift test
+
+      - name: Run CLI smoke tests
+        run: Scripts/smoke-test.sh
+
+      - name: Build iOS demo app
+        run: >
+          xcodebuild
+          -project SwiftMarkItDownApp.xcodeproj
+          -scheme SwiftMarkItDownApp
+          -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO
+          build
