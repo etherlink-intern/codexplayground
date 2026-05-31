@@ -43,6 +43,17 @@ print(document.markdown)
 swift run swift-markitdown path/to/file.html
 ```
 
+## Testing
+
+Run the unit test suite and CLI fixture smoke tests before opening a PR:
+
+```bash
+swift test
+Scripts/smoke-test.sh
+```
+
+GitHub Actions runs the same checks on pushes to `main`, pull requests, and manual workflow dispatches.
+
 ## Roadmap
 
 1. Expand the text/HTML/CSV/JSON converters with richer Markdown normalization and metadata extraction.
