@@ -2,18 +2,20 @@
 
 SwiftMarkItDown is the start of a native Swift/iOS document-to-Markdown pipeline inspired by Microsoft MarkItDown. The repository is structured around a Swift Package so the same core can be embedded in an iOS app, a macOS utility, or a server-side Swift service. The repo also includes a minimal SwiftUI demo app that exercises the package on iOS.
 
-## Current scope
+## What works today
 
-The first milestone focuses on small, deterministic core converters that are safe to run fully on-device:
+The current MVP is intentionally small and deterministic so it can run fully on-device:
 
 - `txt` and `md` passthrough with text decoding and blank-line cleanup.
-- `html` to Markdown using a lightweight Foundation-based converter for common headings, inline emphasis, links, code, paragraphs, and list items.
+- `html` to Markdown for common headings, inline emphasis, links, code, paragraphs, and list items, with document `<head>`, script, and style content ignored.
 - `csv` to GitHub-Flavored Markdown tables, including quoted fields and escaped pipes.
 - `json` to nested Markdown bullets with stable key ordering.
+- A CLI wrapper for local/manual conversion checks.
+- A SwiftUI iOS demo app for editing sample input and converting it to Markdown in the simulator.
 
-PDF, DOCX, PPTX, and XLSX are intentionally represented in the format model but return `unsupportedFormat` until their native converter modules are built.
+PDF, DOCX, PPTX, and XLSX are represented in the format model but still return `unsupportedFormat` until their native converter modules are implemented.
 
-## Package layout
+## Repository layout
 
 ```text
 Package.swift
@@ -65,4 +67,4 @@ GitHub Actions runs the same checks on pushes to `main`, pull requests, and manu
 2. Add a ZIP/OpenXML package reader as shared infrastructure for DOCX, PPTX, and XLSX.
 3. Implement DOCX paragraph, heading, table, hyperlink, and image-reference extraction.
 4. Add PDFKit/Vision-backed PDF text and OCR extraction for Apple platforms behind conditional compilation.
-5. Layer in iOS app affordances: document picker, share extension, progress reporting, and a pluggable backend escape hatch for heavyweight conversions.
+5. Evolve the demo into a more complete iOS MVP with document picker import, share/export flows, progress reporting, and a pluggable backend escape hatch for heavyweight conversions.
