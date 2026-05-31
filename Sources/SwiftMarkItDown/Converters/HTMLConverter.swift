@@ -10,6 +10,7 @@ public struct HTMLConverter: DocumentConverter {
         html = html.replacingOccurrences(of: "\r\n", with: "\n")
 
         let rules: [(String, String)] = [
+            ("(?is)<head\\b[^>]*>.*?</head>", ""),
             ("(?is)<script\\b[^>]*>.*?</script>", ""),
             ("(?is)<style\\b[^>]*>.*?</style>", ""),
             ("(?is)<h1\\b[^>]*>(.*?)</h1>", "\n# $1\n"),
@@ -36,6 +37,9 @@ public struct HTMLConverter: DocumentConverter {
             .smid_decodingHTMLEntities()
             .replacingOccurrences(of: "[ \t]+\n", with: "\n", options: .regularExpression)
             .replacingOccurrences(of: "\n{3,}", with: "\n\n", options: .regularExpression)
+            .split(separator: "\n", omittingEmptySubsequences: false)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .joined(separator: "\n")
             .smid_trimmedBlankLines
 
         return MarkdownDocument(markdown: markdown, sourceFormat: .html)
