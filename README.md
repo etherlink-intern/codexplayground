@@ -10,8 +10,11 @@ The current MVP is intentionally small and deterministic so it can run fully on-
 - `html` to Markdown for common headings, inline emphasis, links, code, paragraphs, and list items, with document `<head>`, script, and style content ignored.
 - `csv` to GitHub-Flavored Markdown tables, including quoted fields and escaped pipes.
 - `json` to nested Markdown bullets with stable key ordering.
+- Apple-platform image OCR for `png`, `jpg`/`jpeg`, `heic`, `tiff`, and `gif` inputs using Vision text recognition, returning recognized lines as Markdown text.
 - A CLI wrapper for local/manual conversion checks.
 - A SwiftUI iOS demo app for editing sample input and converting it to Markdown in the simulator.
+
+Image OCR is available when the package is built on platforms that provide Vision, CoreGraphics, and ImageIO. On other platforms, image formats are recognized but return `unsupportedFormat`.
 
 PDF, DOCX, PPTX, and XLSX are represented in the format model but still return `unsupportedFormat` until their native converter modules are implemented.
 
@@ -44,6 +47,10 @@ let document = try MarkItDown().convert(request)
 print(document.markdown)
 ```
 
+## Import button integration
+
+See [Docs/ImportButtonIntegration.md](Docs/ImportButtonIntegration.md) for SwiftUI `fileImporter` and `PhotosPicker` examples that wire an app's Import button into `SwiftMarkItDown`, including image OCR inputs.
+
 ## CLI usage
 
 ```bash
@@ -64,7 +71,8 @@ GitHub Actions runs the same checks on pushes to `main`, pull requests, and manu
 ## Roadmap
 
 1. Expand the text/HTML/CSV/JSON converters with richer Markdown normalization and metadata extraction.
-2. Add a ZIP/OpenXML package reader as shared infrastructure for DOCX, PPTX, and XLSX.
-3. Implement DOCX paragraph, heading, table, hyperlink, and image-reference extraction.
-4. Add PDFKit/Vision-backed PDF text and OCR extraction for Apple platforms behind conditional compilation.
-5. Evolve the demo into a more complete iOS MVP with document picker import, share/export flows, progress reporting, and a pluggable backend escape hatch for heavyweight conversions.
+2. Improve OCR layout reconstruction for headings, lists, tables, and multi-column scans.
+3. Add a ZIP/OpenXML package reader as shared infrastructure for DOCX, PPTX, and XLSX.
+4. Implement DOCX paragraph, heading, table, hyperlink, and image-reference extraction.
+5. Add PDFKit/Vision-backed PDF text and OCR extraction for Apple platforms behind conditional compilation.
+6. Evolve the demo into a more complete iOS MVP with document picker import, share/export flows, progress reporting, and a pluggable backend escape hatch for heavyweight conversions.
