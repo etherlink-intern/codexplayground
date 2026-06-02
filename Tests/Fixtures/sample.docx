@@ -1,0 +1,2 @@
+SwiftMarkItDown unsupported DOCX fixture.
+This is intentionally plain text with a .docx extension so CI can test routing without binary fixtures.

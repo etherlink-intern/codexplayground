@@ -1,0 +1,2 @@
+SwiftMarkItDown unsupported PPTX fixture.
+This is intentionally plain text with a .pptx extension so CI can test routing without binary fixtures.
