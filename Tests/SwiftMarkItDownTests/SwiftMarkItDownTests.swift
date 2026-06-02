@@ -60,30 +60,6 @@ struct SwiftMarkItDownTests {
         #expect(document.markdown == "- **formats**:\n  - txt\n  - html\n- **title**: Roadmap")
     }
 
-    #if canImport(Vision) && canImport(CoreGraphics) && canImport(CoreText) && canImport(ImageIO)
-    @Test("uses Vision OCR to convert rendered images to Markdown")
-    func convertsRenderedImagesWithVisionOCR() throws {
-        for sample in try renderedOCRSamples() {
-            let request = ConversionRequest(data: sample.data, fileName: sample.fileName)
-            let document = try MarkItDown().convert(request)
-            let normalized = document.markdown.uppercased()
-
-            #expect(document.sourceFormat == sample.format)
-            #expect(normalized.contains("SWIFT"))
-            #expect(normalized.contains("OCR"))
-            #expect(normalized.contains("MARKDOWN"))
-            #expect(document.metadata["recognizedTextLineCount"] != "0")
-        }
-    }
-    #else
-    @Test("throws unsupported for images when Vision OCR is unavailable")
-    func throwsForImagesWhenVisionOCRIsUnavailable() throws {
-        let request = ConversionRequest(data: Data(), fileName: "scan.png")
-        #expect(throws: ConversionError.unsupportedFormat(.png)) {
-            try MarkItDown().convert(request)
-        }
-    }
-    #endif
 
     @Test("throws for reserved but unimplemented formats")
     func throwsForUnimplementedFormats() throws {
@@ -161,12 +137,48 @@ private func fixtureURL(_ fileName: String) -> URL {
 }
 
 private func blankPNGFixtureData() throws -> Data {
+    #if canImport(Vision) && canImport(CoreGraphics) && canImport(ImageIO)
+    let width = 100
+    let height = 100
+    let colorSpace = CGColorSpaceCreateDeviceRGB()
+    guard let context = CGContext(
+        data: nil,
+        width: width,
+        height: height,
+        bitsPerComponent: 8,
+        bytesPerRow: 0,
+        space: colorSpace,
+        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+    ) else {
+        throw ConversionError.malformedInput("Could not create blank PNG fixture context.")
+    }
+
+    context.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 1))
+    context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+
+    guard let image = context.makeImage() else {
+        throw ConversionError.malformedInput("Could not render blank PNG fixture.")
+    }
+
+    let output = NSMutableData()
+    guard let destination = CGImageDestinationCreateWithData(output, "public.png" as CFString, 1, nil) else {
+        throw ConversionError.malformedInput("Could not create blank PNG fixture destination.")
+    }
+
+    CGImageDestinationAddImage(destination, image, nil)
+    guard CGImageDestinationFinalize(destination) else {
+        throw ConversionError.malformedInput("Could not encode blank PNG fixture.")
+    }
+
+    return output as Data
+    #else
     let base64 = try String(contentsOf: fixtureURL("blank.png.base64"), encoding: .utf8)
         .trimmingCharacters(in: .whitespacesAndNewlines)
     guard let data = Data(base64Encoded: base64) else {
         throw ConversionError.malformedInput("Blank PNG fixture is not valid base64.")
     }
     return data
+    #endif
 }
 
 #if canImport(Vision) && canImport(CoreGraphics) && canImport(CoreText) && canImport(ImageIO)
@@ -235,69 +247,4 @@ private func renderOCRImage(typeIdentifier: CFString) throws -> Data {
     return output as Data
 }
 
-#if canImport(Vision) && canImport(CoreGraphics) && canImport(CoreText) && canImport(ImageIO)
-private struct OCRSample {
-    let fileName: String
-    let format: DocumentFormat
-    let data: Data
-}
-
-private func renderedOCRSamples() throws -> [OCRSample] {
-    [
-        OCRSample(fileName: "ocr-sample.png", format: .png, data: try renderOCRImage(typeIdentifier: "public.png" as CFString)),
-        OCRSample(fileName: "ocr-sample.jpg", format: .jpeg, data: try renderOCRImage(typeIdentifier: "public.jpeg" as CFString))
-    ]
-}
-
-private func renderOCRImage(typeIdentifier: CFString) throws -> Data {
-    let width = 1_200
-    let height = 520
-    let colorSpace = CGColorSpaceCreateDeviceRGB()
-    guard let context = CGContext(
-        data: nil,
-        width: width,
-        height: height,
-        bitsPerComponent: 8,
-        bytesPerRow: 0,
-        space: colorSpace,
-        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-    ) else {
-        throw ConversionError.malformedInput("Could not create OCR test image context.")
-    }
-
-    context.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 1))
-    context.fill(CGRect(x: 0, y: 0, width: width, height: height))
-    context.setAllowsAntialiasing(true)
-    context.setShouldAntialias(true)
-
-    let font = CTFontCreateWithName("Helvetica-Bold" as CFString, 112, nil)
-    let attributes: [NSAttributedString.Key: Any] = [
-        NSAttributedString.Key(kCTFontAttributeName as String): font,
-        NSAttributedString.Key(kCTForegroundColorAttributeName as String): CGColor(red: 0, green: 0, blue: 0, alpha: 1)
-    ]
-
-    for (index, line) in ["SWIFT OCR", "MARKDOWN"].enumerated() {
-        let attributed = NSAttributedString(string: line, attributes: attributes)
-        let textLine = CTLineCreateWithAttributedString(attributed)
-        context.textPosition = CGPoint(x: 80, y: height - 170 - (index * 150))
-        CTLineDraw(textLine, context)
-    }
-
-    guard let image = context.makeImage() else {
-        throw ConversionError.malformedInput("Could not render OCR test image.")
-    }
-
-    let output = NSMutableData()
-    guard let destination = CGImageDestinationCreateWithData(output, typeIdentifier, 1, nil) else {
-        throw ConversionError.malformedInput("Could not create OCR test image destination.")
-    }
-
-    let options = [kCGImageDestinationLossyCompressionQuality as String: 0.95] as CFDictionary
-    CGImageDestinationAddImage(destination, image, options)
-    guard CGImageDestinationFinalize(destination) else {
-        throw ConversionError.malformedInput("Could not encode OCR test image.")
-    }
-
-    return output as Data
-}
 #endif
