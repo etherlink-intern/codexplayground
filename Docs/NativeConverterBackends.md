@@ -11,7 +11,7 @@ They are straightforward to integrate as Swift Package / Apple-framework buildin
 | PDF | Apple's PDFKit | Low for embedded text; medium when OCR fallback is included. | PDFKit is built into Apple platforms and can extract text from many PDFs, but scanned/image-only PDFs still need page rendering plus Vision OCR. |
 | DOCX | ZIPFoundation + OOXML parsing | Medium. | DOCX is a ZIP of XML parts, but useful Markdown needs document body parsing, relationships, styles, numbering, tables, hyperlinks, and images. |
 | PPTX | ZIPFoundation + OOXML parsing | Medium-high. | PPTX uses the same OpenXML ZIP structure, but slide ordering, shapes, notes, and layout-driven reading order make Markdown extraction more involved than DOCX. |
-| XLSX | CoreXLSX + its transitive ZIPFoundation/XMLCoder graph | Medium-low for worksheet tables; medium for richer workbooks. | CoreXLSX already parses XLSX structure in Swift, but Markdown output still needs shared strings, sheet selection, empty-cell handling, formulas, merged cells, and table shaping decisions. Its dependency graph must be acknowledged alongside the direct package. |
+| XLSX | CoreXLSX | Medium-low for worksheet tables; medium for richer workbooks. | CoreXLSX already parses XLSX structure in Swift, but Markdown output still needs shared strings, sheet selection, empty-cell handling, formulas, merged cells, and table shaping decisions. |
 
 ## Backend source acknowledgements
 
@@ -22,10 +22,7 @@ When one of these backends is implemented, the PR that adds it should also add t
 | Apple PDFKit | <https://developer.apple.com/documentation/pdfkit> | Apple system framework; no SwiftPM dependency. | PDF text extraction and optional page rendering for OCR fallback on Apple platforms. |
 | ZIPFoundation | <https://github.com/weichsel/ZIPFoundation> | MIT-licensed Swift package. | ZIP container access for DOCX and PPTX OpenXML parts. |
 | CoreXLSX | <https://github.com/CoreOffice/CoreXLSX> | Apache-2.0-licensed Swift package. | Read-only parsing of XLSX workbooks and worksheets. |
-| XMLCoder | <https://github.com/maxdesiatov/XMLCoder> | MIT-licensed Swift package; transitive dependency of CoreXLSX. | XML decoding support used by CoreXLSX when mapping XLSX XML parts into Swift models. |
 | Office Open XML structure | <https://ecma-international.org/publications-and-standards/standards/ecma-376/> | Published standard. | Format reference for DOCX/PPTX/XLSX XML parts and relationships. |
-
-> Verification note: as of the current dependency review, CoreXLSX declares both XMLCoder and ZIPFoundation as SwiftPM dependencies. That means an XLSX converter PR must include acknowledgements for CoreXLSX itself **and** for each transitive dependency that ships in the resolved dependency graph.
 
 ## Recommended implementation order
 
@@ -53,7 +50,6 @@ When one of these backends is implemented, the PR that adds it should also add t
 
 5. **XLSX converter with CoreXLSX**
    - Add CoreXLSX as a SwiftPM dependency when XLSX implementation begins.
-   - Re-run SwiftPM dependency resolution and record the full resolved graph, including CoreXLSX transitive packages such as XMLCoder and ZIPFoundation.
    - Convert each selected worksheet to Markdown tables.
    - Decide how to handle formulas, empty rows/columns, merged cells, dates, and multiple sheets.
 
@@ -63,5 +59,3 @@ When one of these backends is implemented, the PR that adds it should also add t
 - Prefer conditional compilation for Apple-only frameworks such as PDFKit and Vision.
 - Keep unsupported formats visible in `DocumentFormat` so apps can show useful import affordances and friendly `unsupportedFormat` errors.
 - Add license acknowledgements in the same PR that introduces any FOSS dependency.
-- Verify and acknowledge the **full resolved SwiftPM dependency graph**, not just direct dependencies. For example, a CoreXLSX-based converter must also account for its transitive XMLCoder and ZIPFoundation packages.
-- Refresh dependency acknowledgements whenever `Package.resolved` changes so newly added, removed, or upgraded transitive packages are not missed.
