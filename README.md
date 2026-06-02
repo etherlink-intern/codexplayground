@@ -4,7 +4,18 @@ SwiftMarkItDown is the start of a native Swift/iOS document-to-Markdown pipeline
 
 ## What works today
 
-The current MVP is intentionally small and deterministic so it can run fully on-device:
+The current MVP is intentionally small and deterministic. These formats have converters in the default `MarkItDown` pipeline:
+
+| Input family | Extensions / aliases | Content-type hints | Conversion behavior | Platform availability |
+| --- | --- | --- | --- | --- |
+| Plain text | `txt`, `text` | `text/plain` | Decodes text and normalizes blank lines. | All package platforms. |
+| Markdown | `md`, `markdown` | `text/markdown`, `text/x-markdown` | Treats Markdown as text-like input and normalizes blank lines. | All package platforms. |
+| HTML | `html`, `htm` | `text/html`, `application/xhtml+xml` | Converts common headings, inline emphasis, links, code, paragraphs, and list items; ignores document `<head>`, script, and style content. | All package platforms. |
+| CSV | `csv` | `text/csv`, `application/csv` | Converts rows to GitHub-Flavored Markdown tables, including quoted fields and escaped pipes. | All package platforms. |
+| JSON | `json` | `application/json`, `text/json` | Converts objects and arrays to nested Markdown bullets with stable key ordering. | All package platforms. |
+| Images | `png`, `jpg`, `jpeg`, `heic`, `heif`, `tif`, `tiff`, `gif` | `image/png`, `image/jpeg`, `image/heic`, `image/heif`, `image/tiff`, `image/gif` | Uses Apple Vision OCR and returns recognized text lines as Markdown text. GIF OCR uses the decoded first image. | Apple platforms that provide Vision, CoreGraphics, and ImageIO. Other platforms recognize the formats but return `unsupportedFormat`. |
+
+The package also includes:
 
 - `txt` and `md` passthrough with text decoding and blank-line cleanup.
 - `html` to Markdown for common headings, inline emphasis, links, code, paragraphs, and list items, with document `<head>`, script, and style content ignored.
@@ -67,6 +78,10 @@ Scripts/smoke-test.sh
 ```
 
 GitHub Actions runs the same checks on pushes to `main`, pull requests, and manual workflow dispatches.
+
+## License
+
+SwiftMarkItDown is available under the [MIT License](LICENSE).
 
 ## Roadmap
 
