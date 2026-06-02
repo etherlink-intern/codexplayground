@@ -1,6 +1,6 @@
 # Native and FOSS Converter Backend Plan
 
-This document records the likely native/FOSS backends for the reserved document formats in `DocumentFormat`. These are **not package dependencies yet**; the current release still returns `unsupportedFormat` for PDF, DOCX, PPTX, and XLSX. The goal is to keep the app's import UI honest while making the implementation path explicit.
+This document records the native/FOSS backend status for the reserved document formats in `DocumentFormat`. PDFKit-backed embedded-text PDF extraction is now implemented on Apple platforms; DOCX, PPTX, and XLSX still return `unsupportedFormat` until their native converter modules are implemented. The goal is to keep the app's import UI honest while making the implementation path explicit.
 
 ## Short answer: are these simple to add?
 
@@ -8,7 +8,7 @@ They are straightforward to integrate as Swift Package / Apple-framework buildin
 
 | Format | Proposed backend | Integration effort | Why |
 | --- | --- | --- | --- |
-| PDF | Apple's PDFKit | Low for embedded text; medium when OCR fallback is included. | PDFKit is built into Apple platforms and can extract text from many PDFs, but scanned/image-only PDFs still need page rendering plus Vision OCR. |
+| PDF | Apple's PDFKit | Shipped for embedded text; medium remaining work for OCR fallback. | PDFKit is built into Apple platforms and now extracts embedded text from PDFs, but scanned/image-only PDFs still need page rendering plus Vision OCR. |
 | DOCX | ZIPFoundation + OOXML parsing | Medium. | DOCX is a ZIP of XML parts, but useful Markdown needs document body parsing, relationships, styles, numbering, tables, hyperlinks, and images. |
 | PPTX | ZIPFoundation + OOXML parsing | Medium-high. | PPTX uses the same OpenXML ZIP structure, but slide ordering, shapes, notes, and layout-driven reading order make Markdown extraction more involved than DOCX. |
 | XLSX | CoreXLSX | Medium-low for worksheet tables; medium for richer workbooks. | CoreXLSX already parses XLSX structure in Swift, but Markdown output still needs shared strings, sheet selection, empty-cell handling, formulas, merged cells, and table shaping decisions. |
@@ -26,11 +26,11 @@ When one of these backends is implemented, the PR that adds it should also add t
 
 ## Recommended implementation order
 
-1. **PDF text extraction with PDFKit**
-   - Add a `PDFConverter` behind `#if canImport(PDFKit)`.
-   - Extract embedded page text first.
-   - If a page has no embedded text, optionally render the page and reuse the Vision OCR path already used by image ingestion.
-   - Keep non-Apple platforms returning `unsupportedFormat` unless a separate cross-platform PDF backend is added.
+1. **PDF text extraction with PDFKit** — shipped for embedded text
+   - `PDFConverter` is compiled behind `#if canImport(PDFKit)`.
+   - Embedded page text is extracted first.
+   - Remaining work: if a page has no embedded text, optionally render the page and reuse the Vision OCR path already used by image ingestion.
+   - Non-Apple platforms continue returning `unsupportedFormat` unless a separate cross-platform PDF backend is added.
 
 2. **Shared OpenXML ZIP infrastructure**
    - Add ZIPFoundation as a SwiftPM dependency only when DOCX or PPTX work starts.

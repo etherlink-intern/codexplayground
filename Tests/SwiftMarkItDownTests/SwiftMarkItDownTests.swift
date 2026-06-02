@@ -2,6 +2,10 @@ import Foundation
 import Testing
 @testable import SwiftMarkItDown
 
+#if canImport(PDFKit)
+import PDFKit
+#endif
+
 #if canImport(Vision) && canImport(CoreGraphics) && canImport(CoreText) && canImport(ImageIO)
 import CoreGraphics
 import CoreText
@@ -61,13 +65,52 @@ struct SwiftMarkItDownTests {
     }
 
 
-    @Test("throws for reserved but unimplemented formats")
+    @Test("throws for reserved but unimplemented non-PDF formats")
     func throwsForUnimplementedFormats() throws {
-        let request = ConversionRequest(data: Data(), fileName: "paper.pdf")
-        #expect(throws: ConversionError.unsupportedFormat(.pdf)) {
-            try MarkItDown().convert(request)
+        let cases: [(String, DocumentFormat)] = [
+            ("document.docx", .docx),
+            ("deck.pptx", .pptx),
+            ("workbook.xlsx", .xlsx)
+        ]
+
+        for (fileName, format) in cases {
+            let request = ConversionRequest(data: Data(), fileName: fileName)
+            #expect(throws: ConversionError.unsupportedFormat(format)) {
+                try MarkItDown().convert(request)
+            }
         }
     }
+
+    #if canImport(PDFKit)
+    @Test("converts embedded-text PDF fixtures to Markdown")
+    func convertsPDF() throws {
+        let document = try MarkItDown().convert(contentsOf: fixtureURL("sample.pdf"))
+        let expected = try String(contentsOf: expectedURL("sample.md"), encoding: .utf8)
+            .smid_testTrimmedTrailingNewline
+
+        #expect(document.markdown == expected)
+        #expect(document.sourceFormat == .pdf)
+        #expect(document.metadata["pageCount"] == "1")
+        #expect(document.metadata["extractedTextPageCount"] == "1")
+    }
+
+    @Test("converts blank PDF fixtures to empty Markdown")
+    func convertsBlankPDF() throws {
+        let document = try MarkItDown().convert(contentsOf: fixtureURL("empty.pdf"))
+
+        #expect(document.markdown == "")
+        #expect(document.sourceFormat == .pdf)
+        #expect(document.metadata["pageCount"] == "1")
+        #expect(document.metadata["extractedTextPageCount"] == "0")
+    }
+    #else
+    @Test("throws unsupported for PDFs when PDFKit is unavailable")
+    func throwsForPDFsWhenPDFKitIsUnavailable() throws {
+        #expect(throws: ConversionError.unsupportedFormat(.pdf)) {
+            try MarkItDown().convert(contentsOf: fixtureURL("sample.pdf"))
+        }
+    }
+    #endif
 
     #if canImport(Vision) && canImport(CoreGraphics) && canImport(CoreText) && canImport(ImageIO)
     @Test("uses Vision OCR to convert rendered images to Markdown")
@@ -105,11 +148,9 @@ struct SwiftMarkItDownTests {
     @Test("throws unsupported for every reserved document path, including empty documents")
     func throwsUnsupportedForReservedDocumentPaths() throws {
         let cases: [(String, DocumentFormat)] = [
-            ("sample.pdf", .pdf),
             ("sample.docx", .docx),
             ("sample.pptx", .pptx),
             ("sample.xlsx", .xlsx),
-            ("empty.pdf", .pdf),
             ("empty.docx", .docx),
             ("empty.pptx", .pptx),
             ("empty.xlsx", .xlsx)
@@ -134,6 +175,18 @@ private func fixtureURL(_ fileName: String) -> URL {
     URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
         .appendingPathComponent("Tests/Fixtures")
         .appendingPathComponent(fileName)
+}
+
+private func expectedURL(_ fileName: String) -> URL {
+    URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+        .appendingPathComponent("Tests/Expected")
+        .appendingPathComponent(fileName)
+}
+
+private extension String {
+    var smid_testTrimmedTrailingNewline: String {
+        trimmingCharacters(in: .newlines)
+    }
 }
 
 private func blankPNGFixtureData() throws -> Data {

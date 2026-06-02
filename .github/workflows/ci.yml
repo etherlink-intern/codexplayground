@@ -9,8 +9,14 @@ on:
 
 jobs:
   test:
-    name: Swift tests and smoke tests
-    runs-on: macos-15
+    name: Swift tests and smoke tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-15
+          - ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5

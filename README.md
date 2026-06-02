@@ -14,6 +14,7 @@ The current MVP is intentionally small and deterministic. These formats have con
 | CSV | `csv` | `text/csv`, `application/csv` | Converts rows to GitHub-Flavored Markdown tables, including quoted fields and escaped pipes. | All package platforms. |
 | JSON | `json` | `application/json`, `text/json` | Converts objects and arrays to nested Markdown bullets with stable key ordering. | All package platforms. |
 | Images | `png`, `jpg`, `jpeg`, `heic`, `heif`, `tif`, `tiff`, `gif` | `image/png`, `image/jpeg`, `image/heic`, `image/heif`, `image/tiff`, `image/gif` | Uses Apple Vision OCR and returns recognized text lines as Markdown text. GIF OCR uses the decoded first image. | Apple platforms that provide Vision, CoreGraphics, and ImageIO. Other platforms recognize the formats but return `unsupportedFormat`. |
+| PDF | `pdf` | `application/pdf` | Uses Apple PDFKit to extract embedded page text into Markdown paragraphs and records page-count metadata. | Apple platforms that provide PDFKit. Other platforms recognize PDF but return `unsupportedFormat`. |
 
 The package also includes:
 
@@ -22,12 +23,13 @@ The package also includes:
 - `csv` to GitHub-Flavored Markdown tables, including quoted fields and escaped pipes.
 - `json` to nested Markdown bullets with stable key ordering.
 - Apple-platform image OCR for `png`, `jpg`/`jpeg`, `heic`, `tiff`, and `gif` inputs using Vision text recognition, returning recognized lines as Markdown text.
+- Apple-platform PDF text extraction for embedded-text PDFs using PDFKit.
 - A CLI wrapper for local/manual conversion checks.
 - A SwiftUI iOS demo app for editing sample input and converting it to Markdown in the simulator.
 
 Image OCR is available when the package is built on platforms that provide Vision, CoreGraphics, and ImageIO. On other platforms, image formats are recognized but return `unsupportedFormat`.
 
-PDF, DOCX, PPTX, and XLSX are represented in the format model but still return `unsupportedFormat` until their native converter modules are implemented.
+DOCX, PPTX, and XLSX are represented in the format model but still return `unsupportedFormat` until their native converter modules are implemented. PDF conversion is implemented on Apple platforms that provide PDFKit; non-Apple platforms still return `unsupportedFormat` for PDF.
 
 ## Repository layout
 
@@ -87,7 +89,7 @@ SwiftMarkItDown is available under the [MIT License](LICENSE).
 
 1. Expand the text/HTML/CSV/JSON converters with richer Markdown normalization and metadata extraction.
 2. Improve OCR layout reconstruction for headings, lists, tables, and multi-column scans.
-3. Add a ZIP/OpenXML package reader as shared infrastructure for DOCX, PPTX, and XLSX.
-4. Implement DOCX paragraph, heading, table, hyperlink, and image-reference extraction.
-5. Add PDFKit/Vision-backed PDF text and OCR extraction for Apple platforms behind conditional compilation.
+3. Add OCR fallback for scanned/image-only PDF pages on Apple platforms.
+4. Add a ZIP/OpenXML package reader as shared infrastructure for DOCX, PPTX, and XLSX.
+5. Implement DOCX paragraph, heading, table, hyperlink, and image-reference extraction.
 6. Evolve the demo into a more complete iOS MVP with document picker import, share/export flows, progress reporting, and a pluggable backend escape hatch for heavyweight conversions.
