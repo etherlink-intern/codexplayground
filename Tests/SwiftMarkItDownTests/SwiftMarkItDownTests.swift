@@ -92,6 +92,147 @@ struct SwiftMarkItDownTests {
             try MarkItDown().convert(request)
         }
     }
+
+    #if canImport(Vision) && canImport(CoreGraphics) && canImport(CoreText) && canImport(ImageIO)
+    @Test("uses Vision OCR to convert rendered images to Markdown")
+    func convertsRenderedImagesWithVisionOCR() throws {
+        for sample in try renderedOCRSamples() {
+            let request = ConversionRequest(data: sample.data, fileName: sample.fileName)
+            let document = try MarkItDown().convert(request)
+            let normalized = document.markdown.uppercased()
+
+            #expect(document.sourceFormat == sample.format)
+            #expect(normalized.contains("SWIFT"))
+            #expect(normalized.contains("OCR"))
+            #expect(normalized.contains("MARKDOWN"))
+            #expect(document.metadata["recognizedTextLineCount"] != "0")
+        }
+    }
+
+    @Test("converts text-fixture-backed blank PNG through the image pipeline")
+    func convertsTextFixtureBackedBlankPNG() throws {
+        let request = ConversionRequest(data: try blankPNGFixtureData(), fileName: "blank.png")
+        let document = try MarkItDown().convert(request)
+        #expect(document.sourceFormat == .png)
+        #expect(document.markdown == "")
+        #expect(document.metadata["recognizedTextLineCount"] == "0")
+    }
+    #else
+    @Test("throws unsupported for text-fixture-backed images when Vision OCR is unavailable")
+    func throwsForImagesWhenVisionOCRIsUnavailable() throws {
+        #expect(throws: ConversionError.unsupportedFormat(.png)) {
+            try MarkItDown().convert(ConversionRequest(data: try blankPNGFixtureData(), fileName: "blank.png"))
+        }
+    }
+    #endif
+
+    @Test("throws unsupported for every reserved document path, including empty documents")
+    func throwsUnsupportedForReservedDocumentPaths() throws {
+        let cases: [(String, DocumentFormat)] = [
+            ("sample.pdf", .pdf),
+            ("sample.docx", .docx),
+            ("sample.pptx", .pptx),
+            ("sample.xlsx", .xlsx),
+            ("empty.pdf", .pdf),
+            ("empty.docx", .docx),
+            ("empty.pptx", .pptx),
+            ("empty.xlsx", .xlsx)
+        ]
+
+        for (fileName, format) in cases {
+            #expect(throws: ConversionError.unsupportedFormat(format), "Unexpected error for \(fileName)") {
+                try MarkItDown().convert(contentsOf: fixtureURL(fileName))
+            }
+        }
+    }
+
+    @Test("throws unsupported for unknown imports")
+    func throwsUnsupportedForUnknownImports() throws {
+        #expect(throws: ConversionError.unsupportedFormat(.unknown)) {
+            try MarkItDown().convert(contentsOf: fixtureURL("unknown.bin"))
+        }
+    }
+}
+
+private func fixtureURL(_ fileName: String) -> URL {
+    URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+        .appendingPathComponent("Tests/Fixtures")
+        .appendingPathComponent(fileName)
+}
+
+private func blankPNGFixtureData() throws -> Data {
+    let base64 = try String(contentsOf: fixtureURL("blank.png.base64"), encoding: .utf8)
+        .trimmingCharacters(in: .whitespacesAndNewlines)
+    guard let data = Data(base64Encoded: base64) else {
+        throw ConversionError.malformedInput("Blank PNG fixture is not valid base64.")
+    }
+    return data
+}
+
+#if canImport(Vision) && canImport(CoreGraphics) && canImport(CoreText) && canImport(ImageIO)
+private struct OCRSample {
+    let fileName: String
+    let format: DocumentFormat
+    let data: Data
+}
+
+private func renderedOCRSamples() throws -> [OCRSample] {
+    [
+        OCRSample(fileName: "ocr-sample.png", format: .png, data: try renderOCRImage(typeIdentifier: "public.png" as CFString)),
+        OCRSample(fileName: "ocr-sample.jpg", format: .jpeg, data: try renderOCRImage(typeIdentifier: "public.jpeg" as CFString))
+    ]
+}
+
+private func renderOCRImage(typeIdentifier: CFString) throws -> Data {
+    let width = 1_200
+    let height = 520
+    let colorSpace = CGColorSpaceCreateDeviceRGB()
+    guard let context = CGContext(
+        data: nil,
+        width: width,
+        height: height,
+        bitsPerComponent: 8,
+        bytesPerRow: 0,
+        space: colorSpace,
+        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+    ) else {
+        throw ConversionError.malformedInput("Could not create OCR test image context.")
+    }
+
+    context.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 1))
+    context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+    context.setAllowsAntialiasing(true)
+    context.setShouldAntialias(true)
+
+    let font = CTFontCreateWithName("Helvetica-Bold" as CFString, 112, nil)
+    let attributes: [NSAttributedString.Key: Any] = [
+        NSAttributedString.Key(kCTFontAttributeName as String): font,
+        NSAttributedString.Key(kCTForegroundColorAttributeName as String): CGColor(red: 0, green: 0, blue: 0, alpha: 1)
+    ]
+
+    for (index, line) in ["SWIFT OCR", "MARKDOWN"].enumerated() {
+        let attributed = NSAttributedString(string: line, attributes: attributes)
+        let textLine = CTLineCreateWithAttributedString(attributed)
+        context.textPosition = CGPoint(x: 80, y: height - 170 - (index * 150))
+        CTLineDraw(textLine, context)
+    }
+
+    guard let image = context.makeImage() else {
+        throw ConversionError.malformedInput("Could not render OCR test image.")
+    }
+
+    let output = NSMutableData()
+    guard let destination = CGImageDestinationCreateWithData(output, typeIdentifier, 1, nil) else {
+        throw ConversionError.malformedInput("Could not create OCR test image destination.")
+    }
+
+    let options = [kCGImageDestinationLossyCompressionQuality as String: 0.95] as CFDictionary
+    CGImageDestinationAddImage(destination, image, options)
+    guard CGImageDestinationFinalize(destination) else {
+        throw ConversionError.malformedInput("Could not encode OCR test image.")
+    }
+
+    return output as Data
 }
 
 #if canImport(Vision) && canImport(CoreGraphics) && canImport(CoreText) && canImport(ImageIO)

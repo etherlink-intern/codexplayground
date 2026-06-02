@@ -6,9 +6,19 @@ public struct JSONConverter: DocumentConverter {
     public init() {}
 
     public func convert(_ request: ConversionRequest, format: DocumentFormat) throws -> MarkdownDocument {
-        let object = try JSONSerialization.jsonObject(with: request.data)
-        let markdown = render(object, level: 0).smid_trimmedBlankLines
-        return MarkdownDocument(markdown: markdown, sourceFormat: .json)
+        guard !request.data.isEmpty else {
+            throw ConversionError.malformedInput("JSON input is empty.")
+        }
+
+        do {
+            let object = try JSONSerialization.jsonObject(with: request.data)
+            let markdown = render(object, level: 0).smid_trimmedBlankLines
+            return MarkdownDocument(markdown: markdown, sourceFormat: .json)
+        } catch let error as ConversionError {
+            throw error
+        } catch {
+            throw ConversionError.malformedInput("The input could not be parsed as JSON.")
+        }
     }
 
     private func render(_ value: Any, level: Int) -> String {
