@@ -70,11 +70,17 @@ run_case empty.html
 run_case empty.csv
 
 run_error_case empty.json "swift-markitdown: JSON input is empty."
-run_error_case sample.pdf "swift-markitdown: No converter is registered for pdf."
+if swift -e 'import PDFKit' >/dev/null 2>&1; then
+  run_case sample.pdf
+  run_case empty.pdf
+else
+  run_error_case sample.pdf "swift-markitdown: No converter is registered for pdf."
+  run_error_case empty.pdf "swift-markitdown: No converter is registered for pdf."
+fi
+
 run_error_case sample.docx "swift-markitdown: No converter is registered for docx."
 run_error_case sample.pptx "swift-markitdown: No converter is registered for pptx."
 run_error_case sample.xlsx "swift-markitdown: No converter is registered for xlsx."
-run_error_case empty.pdf "swift-markitdown: No converter is registered for pdf."
 run_error_case empty.docx "swift-markitdown: No converter is registered for docx."
 run_error_case empty.pptx "swift-markitdown: No converter is registered for pptx."
 run_error_case empty.xlsx "swift-markitdown: No converter is registered for xlsx."
