@@ -17,24 +17,17 @@ The current MVP is intentionally small and deterministic. These formats have con
 
 The package also includes:
 
+- `txt` and `md` passthrough with text decoding and blank-line cleanup.
+- `html` to Markdown for common headings, inline emphasis, links, code, paragraphs, and list items, with document `<head>`, script, and style content ignored.
+- `csv` to GitHub-Flavored Markdown tables, including quoted fields and escaped pipes.
+- `json` to nested Markdown bullets with stable key ordering.
+- Apple-platform image OCR for `png`, `jpg`/`jpeg`, `heic`, `tiff`, and `gif` inputs using Vision text recognition, returning recognized lines as Markdown text.
 - A CLI wrapper for local/manual conversion checks.
 - A SwiftUI iOS demo app for editing sample input and converting it to Markdown in the simulator.
 
-PDF, DOCX, PPTX, and XLSX are represented in the format model for future native converters, but they still return `unsupportedFormat` today.
+Image OCR is available when the package is built on platforms that provide Vision, CoreGraphics, and ImageIO. On other platforms, image formats are recognized but return `unsupportedFormat`.
 
-
-## Planned native/FOSS converter backends
-
-PDF, DOCX, PPTX, and XLSX are intentionally reserved in `DocumentFormat`, but they are not converter-backed yet. The planned backend direction is:
-
-| Reserved format | Planned backend | Current status |
-| --- | --- | --- |
-| PDF | Apple's PDFKit, with optional Vision OCR fallback for scanned pages | Recognized, returns `unsupportedFormat`. |
-| DOCX | ZIPFoundation plus targeted Office Open XML parsing | Recognized, returns `unsupportedFormat`. |
-| PPTX | ZIPFoundation plus targeted Office Open XML parsing | Recognized, returns `unsupportedFormat`. |
-| XLSX | CoreXLSX for workbook parsing, with its resolved transitive dependencies acknowledged too | Recognized, returns `unsupportedFormat`. |
-
-See [Docs/NativeConverterBackends.md](Docs/NativeConverterBackends.md) for the implementation plan, integration effort, source links, and acknowledgement policy. That policy requires checking the full SwiftPM dependency graph, not just direct packages; for example, a future CoreXLSX converter must also account for transitive dependencies such as XMLCoder and ZIPFoundation.
+PDF, DOCX, PPTX, and XLSX are represented in the format model but still return `unsupportedFormat` until their native converter modules are implemented.
 
 ## Repository layout
 
@@ -65,9 +58,9 @@ let document = try MarkItDown().convert(request)
 print(document.markdown)
 ```
 
-## App import integration
+## Import button integration
 
-See [Docs/ImportButtonIntegration.md](Docs/ImportButtonIntegration.md) for SwiftUI `fileImporter`, `PhotosPicker`, and inbound Share Extension examples that wire an app's import surfaces into `SwiftMarkItDown`, including image OCR inputs.
+See [Docs/ImportButtonIntegration.md](Docs/ImportButtonIntegration.md) for SwiftUI `fileImporter` and `PhotosPicker` examples that wire an app's Import button into `SwiftMarkItDown`, including image OCR inputs.
 
 ## CLI usage
 
@@ -94,7 +87,7 @@ SwiftMarkItDown is available under the [MIT License](LICENSE).
 
 1. Expand the text/HTML/CSV/JSON converters with richer Markdown normalization and metadata extraction.
 2. Improve OCR layout reconstruction for headings, lists, tables, and multi-column scans.
-3. Add PDFKit-backed PDF text extraction, with Vision OCR fallback for scanned pages on Apple platforms.
-4. Add ZIPFoundation-backed OpenXML package infrastructure for DOCX and PPTX.
-5. Add DOCX/PPTX converters on top of targeted Office Open XML parsing, then add XLSX conversion with CoreXLSX.
-6. Evolve the demo into a more complete iOS MVP with document picker import, inbound Share Extension handling, share/export flows, progress reporting, and a pluggable backend escape hatch for heavyweight conversions.
+3. Add a ZIP/OpenXML package reader as shared infrastructure for DOCX, PPTX, and XLSX.
+4. Implement DOCX paragraph, heading, table, hyperlink, and image-reference extraction.
+5. Add PDFKit/Vision-backed PDF text and OCR extraction for Apple platforms behind conditional compilation.
+6. Evolve the demo into a more complete iOS MVP with document picker import, share/export flows, progress reporting, and a pluggable backend escape hatch for heavyweight conversions.
