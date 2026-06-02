@@ -13,7 +13,8 @@ public struct MarkItDown: Sendable {
             PlainTextConverter(),
             HTMLConverter(),
             CSVConverter(),
-            JSONConverter()
+            JSONConverter(),
+            ImageOCRConverter()
         ]
     }
 
