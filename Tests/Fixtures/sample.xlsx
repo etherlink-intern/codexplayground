@@ -1,0 +1,2 @@
+SwiftMarkItDown unsupported XLSX fixture.
+This is intentionally plain text with a .xlsx extension so CI can test routing without binary fixtures.
