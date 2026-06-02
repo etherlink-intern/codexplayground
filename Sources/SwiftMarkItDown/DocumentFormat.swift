@@ -7,6 +7,11 @@ public enum DocumentFormat: String, CaseIterable, Sendable {
     case html = "html"
     case csv = "csv"
     case json = "json"
+    case png = "png"
+    case jpeg = "jpg"
+    case heic = "heic"
+    case tiff = "tiff"
+    case gif = "gif"
     case pdf = "pdf"
     case docx = "docx"
     case pptx = "pptx"
@@ -29,6 +34,11 @@ public enum DocumentFormat: String, CaseIterable, Sendable {
         case "htm", "html": return .html
         case "csv": return .csv
         case "json": return .json
+        case "png": return .png
+        case "jpg", "jpeg": return .jpeg
+        case "heic", "heif": return .heic
+        case "tif", "tiff": return .tiff
+        case "gif": return .gif
         case "pdf": return .pdf
         case "docx": return .docx
         case "pptx": return .pptx
@@ -44,6 +54,11 @@ public enum DocumentFormat: String, CaseIterable, Sendable {
         case "text/html", "application/xhtml+xml": .html
         case "text/csv", "application/csv": .csv
         case "application/json", "text/json": .json
+        case "image/png": .png
+        case "image/jpeg", "image/jpg": .jpeg
+        case "image/heic", "image/heif": .heic
+        case "image/tiff": .tiff
+        case "image/gif": .gif
         case "application/pdf": .pdf
         case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": .docx
         case "application/vnd.openxmlformats-officedocument.presentationml.presentation": .pptx
@@ -51,4 +66,8 @@ public enum DocumentFormat: String, CaseIterable, Sendable {
         default: nil
         }
     }
+}
+
+public extension DocumentFormat {
+    static let imageFormats: Set<DocumentFormat> = [.png, .jpeg, .heic, .tiff, .gif]
 }
